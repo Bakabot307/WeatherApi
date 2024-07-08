@@ -1,5 +1,7 @@
 package com.skyapi.weatherforecast.common;
 
+import java.util.Objects;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -7,12 +9,14 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "weather_hourly")
-
 public class HourlyWeather {
+
   @EmbeddedId
   private HourlyWeatherId id = new HourlyWeatherId();
+
   private int temperature;
   private int precipitation;
+
   @Column(length = 50)
   private String status;
 
@@ -48,8 +52,14 @@ public class HourlyWeather {
     this.status = status;
   }
 
-  public HourlyWeather temperature(int temperature) {
-    setTemperature(temperature);
+  public HourlyWeather temperature(int temp) {
+    setTemperature(temp);
+    return this;
+  }
+
+  public HourlyWeather id(Location location, int hour) {
+    this.id.setHourOfDay(hour);
+    this.id.setLocation(location);
     return this;
   }
 
@@ -57,6 +67,7 @@ public class HourlyWeather {
     setPrecipitation(precipitation);
     return this;
   }
+
   public HourlyWeather status(String status) {
     setStatus(status);
     return this;
@@ -67,14 +78,37 @@ public class HourlyWeather {
     return this;
   }
 
-  public HourlyWeather hourOfDay(int hourOfDay) {
-    this.id.setHourOfDay(hourOfDay);
+  public HourlyWeather hourOfDay(int hour) {
+    this.id.setHourOfDay(hour);
     return this;
   }
 
-  public HourlyWeather id(Location location, int hourOfDay) {
-    this.id.setHourOfDay(hourOfDay);
-    this.id.setLocation(location);
-    return this;
+  @Override
+  public String toString() {
+    return "HourlyWeather [hour_of_day=" + id.getHourOfDay() + ", temperature=" + temperature + ", precipitation=" + precipitation
+        + ", status=" + status + "]";
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    HourlyWeather other = (HourlyWeather) obj;
+    return Objects.equals(id, other.id);
+  }
+
+  public HourlyWeather getShallowCopy() {
+    HourlyWeather copy = new HourlyWeather();
+    copy.setId(this.getId());
+    return copy;
   }
 }

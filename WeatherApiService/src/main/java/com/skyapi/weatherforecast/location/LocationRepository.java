@@ -17,4 +17,7 @@ public interface LocationRepository extends CrudRepository<Location, String> {
   @Modifying
   @Query("UPDATE Location set trashed = true where code = ?1")
   public void trashByCode(String code);
+
+  @Query("SELECT l from Location l where l.countryCode = ?1 and l.cityName = ?2 and l.trashed = false")
+  public Location findByCountryCodeAndAndCityName(String countryCode, String cityName);
 }

@@ -1,6 +1,7 @@
 package com.skyapi.weatherforecast;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -22,6 +24,20 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+  @ExceptionHandler(BadRequestException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public ErrorDTO BadRequestException(HttpServletRequest request, Exception ex) {
+    ErrorDTO error = new ErrorDTO();
+
+    error.setTimeStamp(new Date());
+    error.setStatus(HttpStatus.BAD_REQUEST.value());
+    error.addError(ex.getMessage());
+    error.setPath(request.getServletPath());
+    LOGGER.error(ex.getMessage(),ex);
+    return error;
+  }
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -37,6 +53,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return error;
   }
 
+  @ExceptionHandler(ConstraintViolationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public ErrorDTO handleConstraintViolationException(HttpServletRequest request, Exception ex) {
+    ErrorDTO error = new ErrorDTO();
+
+    ConstraintViolationException cve = (ConstraintViolationException) ex;
+
+    error.setTimeStamp(new Date());
+    error.setStatus(HttpStatus.BAD_REQUEST.value());
+    error.setPath(request.getServletPath());
+
+    cve.getConstraintViolations().forEach(violation -> {
+      error.addError(violation.getPropertyPath() + " : " + violation.getMessage());
+    });
+
+    LOGGER.error(ex.getMessage(),ex);
+    return error;
+  }
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status,
       WebRequest request) {

@@ -3,6 +3,7 @@ package com.skyapi.weatherforecast.hourlyweather;
 import com.skyapi.weatherforecast.common.HourlyWeather;
 import com.skyapi.weatherforecast.common.HourlyWeatherId;
 import com.skyapi.weatherforecast.common.Location;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -49,5 +50,32 @@ public class HourlyWeatherTest {
 
 
     hourlyWeatherRepository.deleteById(hourlyWeatherId);
+  }
+
+  @Test
+  public void findByLocationCodeFound(){
+    String locationCode = "DELHI_IN";
+    int hourOfDay = 12;
+
+   List<HourlyWeather> list =  hourlyWeatherRepository.findByLocationCode(locationCode, hourOfDay);
+    assertThat(list).isNotNull();
+  }
+
+  @Test
+  public void findByLocationCodeNotFound(){
+    String locationCode = "DELHI_IN";
+    int hourOfDay = 19;
+
+    List<HourlyWeather> list =  hourlyWeatherRepository.findByLocationCode(locationCode, hourOfDay);
+    assertThat(list).isEmpty();
+  }
+
+  @Test
+  public void findByLocationCodeNotExist(){
+    String locationCode = "DELHIIII_IN";
+    int hourOfDay = 19;
+
+    List<HourlyWeather> list =  hourlyWeatherRepository.findByLocationCode(locationCode, hourOfDay);
+    assertThat(list).isEmpty();
   }
 }

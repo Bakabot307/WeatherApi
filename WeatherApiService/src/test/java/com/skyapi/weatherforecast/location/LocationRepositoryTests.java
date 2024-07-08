@@ -130,4 +130,23 @@ public class LocationRepositoryTests {
     assertThat(location.getListHourlyWeather().size()).isEqualTo(4);
   }
 
+  @Test
+  public void testFindByCountryCodeAndCityNameNotFound() {
+    String countryCode = "IN";
+    String cityName = "New York City";
+    Location location = locationRepository.findByCountryCodeAndAndCityName(countryCode, cityName);
+    assertThat(location).isNull();
+  }
+
+  @Test
+  public void testFindByCountryCodeAndCityNameFound() {
+    String countryCode = "IN";
+    String cityName = "Delhi";
+    Location location = locationRepository.findByCountryCodeAndAndCityName(countryCode, cityName);
+
+    assertThat(location).isNotNull();
+    assertThat(location.getCityName()).isEqualTo(cityName);
+
+  }
+
 }
