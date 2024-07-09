@@ -1,5 +1,6 @@
 package com.skyapi.weatherforecast;
 
+import com.skyapi.weatherforecast.location.LocationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Date;
@@ -16,13 +17,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   @ExceptionHandler(BadRequestException.class)
@@ -35,7 +36,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     error.setStatus(HttpStatus.BAD_REQUEST.value());
     error.addError(ex.getMessage());
     error.setPath(request.getServletPath());
-    LOGGER.error(ex.getMessage(),ex);
+    LOGGER.error(ex.getMessage(), ex);
+    return error;
+  }
+
+  @ExceptionHandler({LocationNotFoundException.class,GeoLocationException.class})
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ResponseBody
+  public ErrorDTO handleLocationNotFoundException(HttpServletRequest request, Exception ex) {
+    ErrorDTO error = new ErrorDTO();
+
+    error.setTimeStamp(new Date());
+    error.setStatus(HttpStatus.NOT_FOUND.value());
+    error.addError(ex.getMessage());
+    error.setPath(request.getServletPath());
+    LOGGER.error(ex.getMessage(), ex);
     return error;
   }
 
@@ -49,7 +64,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
     error.addError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
     error.setPath(request.getServletPath());
-    LOGGER.error(ex.getMessage(),ex);
+    LOGGER.error(ex.getMessage(), ex);
     return error;
   }
 
@@ -69,9 +84,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       error.addError(violation.getPropertyPath() + " : " + violation.getMessage());
     });
 
-    LOGGER.error(ex.getMessage(),ex);
+    LOGGER.error(ex.getMessage(), ex);
     return error;
   }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status,
       WebRequest request) {
@@ -86,7 +102,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     fieldErrorList.forEach(field -> {
       error.addError(field.getDefaultMessage());
     });
-    LOGGER.error(ex.getMessage(),ex);
-    return new ResponseEntity<>(error,headers,status);
+    LOGGER.error(ex.getMessage(), ex);
+    return new ResponseEntity<>(error, headers, status);
   }
 }

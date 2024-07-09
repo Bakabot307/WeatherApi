@@ -24,15 +24,19 @@ public class LocationService {
     return repository.findUntrashed();
   }
 
-  public Location get(String code) {
-    return repository.findByCode(code);
+  public Location get(String code){
+    Location location = repository.findByCode(code);
+    if (location == null) {
+      throw new LocationNotFoundException(code);
+    }
+    return location;
   }
 
-  public Location update(Location locationInRequest) throws LocationNotFoundException {
+  public Location update(Location locationInRequest) {
     String code = locationInRequest.getCode();
     Location locationDB = repository.findByCode(code);
     if (locationDB == null) {
-      throw new LocationNotFoundException("No location with the given code:" + code);
+      throw new LocationNotFoundException(code);
     }
     locationDB.setCityName(locationInRequest.getCityName());
     locationDB.setRegionName(locationInRequest.getRegionName());
@@ -42,10 +46,10 @@ public class LocationService {
     return repository.save(locationDB);
   }
 
-  public void delete(String code) throws LocationNotFoundException {
+  public void delete(String code){
 
     if (!repository.existsById(code)) {
-      throw new LocationNotFoundException("No location with the given code:" + code);
+      throw new LocationNotFoundException(code);
     }
     repository.trashByCode(code);
   }

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/locations")
-public class LocationApiController {
+public class LocationApiController extends RuntimeException {
 
   private LocationService service;
 
@@ -27,7 +27,7 @@ public class LocationApiController {
   public LocationApiController(LocationService service, ModelMapper modelMapper) {
     super();
     this.service = service;
-    this.modelMapper= modelMapper;
+    this.modelMapper = modelMapper;
   }
 
   @PostMapping
@@ -40,7 +40,6 @@ public class LocationApiController {
   @GetMapping
   public ResponseEntity<?> ListLocation() {
     List<Location> locations = service.list();
-
     if (locations.isEmpty()) {
       return ResponseEntity.noContent().build();
     }
@@ -50,30 +49,19 @@ public class LocationApiController {
   @GetMapping("/{code}")
   public ResponseEntity<?> getLocation(@PathVariable("code") String code) {
     Location location = service.get(code);
-    if (location == null) {
-      return ResponseEntity.notFound().build();
-    }
     return ResponseEntity.ok(convertToDTO(location));
   }
 
   @PutMapping
   public ResponseEntity<?> updateLocation(@RequestBody @Valid LocationDTO locationDTO) {
-    try {
-      Location updatedLocation = service.update(convertToEntity(locationDTO));
-      return ResponseEntity.ok(convertToDTO(updatedLocation));
-    } catch (LocationNotFoundException e) {
-      return ResponseEntity.notFound().build();
-    }
+    Location updatedLocation = service.update(convertToEntity(locationDTO));
+    return ResponseEntity.ok(convertToDTO(updatedLocation));
   }
 
   @DeleteMapping("/{code}")
   public ResponseEntity<?> deleteLocation(@PathVariable("code") String code) {
-    try {
-      service.delete(code);
-      return ResponseEntity.noContent().build();
-    } catch (LocationNotFoundException e) {
-      return ResponseEntity.notFound().build();
-    }
+    service.delete(code);
+    return ResponseEntity.noContent().build();
   }
 
   private LocationDTO convertToDTO(Location location) {

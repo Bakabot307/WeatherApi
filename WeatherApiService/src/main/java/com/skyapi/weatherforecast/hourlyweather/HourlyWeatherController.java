@@ -2,11 +2,9 @@ package com.skyapi.weatherforecast.hourlyweather;
 
 import com.skyapi.weatherforecast.BadRequestException;
 import com.skyapi.weatherforecast.CommonUtility;
-import com.skyapi.weatherforecast.GeoLocationException;
 import com.skyapi.weatherforecast.GeoLocationService;
 import com.skyapi.weatherforecast.common.HourlyWeather;
 import com.skyapi.weatherforecast.common.Location;
-import com.skyapi.weatherforecast.location.LocationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -49,10 +47,8 @@ public class HourlyWeatherController {
       } else {
         return ResponseEntity.ok(convertToDTO(list));
       }
-    } catch (NumberFormatException | GeoLocationException e) {
+    } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().build();
-    } catch (LocationNotFoundException e) {
-      return ResponseEntity.notFound().build();
     }
   }
 
@@ -69,8 +65,6 @@ public class HourlyWeatherController {
       }
     } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().build();
-    } catch (LocationNotFoundException e) {
-      return ResponseEntity.notFound().build();
     }
   }
 
@@ -84,12 +78,10 @@ public class HourlyWeatherController {
     listDTO.forEach(System.out::println);
     List<HourlyWeather> listHourlyWeather = convertToEntity(listDTO);
     listHourlyWeather.forEach(System.out::println);
-    try {
-      List<HourlyWeather> updateHourlyWeather = hourlyWeatherService.updateByLocationCode(locationCode, listHourlyWeather);
-      return ResponseEntity.ok(convertToDTO(updateHourlyWeather));
-    } catch (LocationNotFoundException e) {
-      return ResponseEntity.notFound().build();
-    }
+
+    List<HourlyWeather> updateHourlyWeather = hourlyWeatherService.updateByLocationCode(locationCode, listHourlyWeather);
+    return ResponseEntity.ok(convertToDTO(updateHourlyWeather));
+
   }
 
   private List<HourlyWeather> convertToEntity(List<HourlyWeatherDTO> listDTO) {

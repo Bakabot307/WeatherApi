@@ -20,37 +20,35 @@ public class RealtimeWeatherService {
     this.locationRepository = locationRepository;
   }
 
-  public RealtimeWeather getByLocation(Location location) throws LocationNotFoundException {
+  public RealtimeWeather getByLocation(Location location) {
     String countryCode = location.getCountryCode();
     String cityName = location.getCityName();
-
     RealtimeWeather realTimeWeather = repository.findByCountryCodeAndCity(countryCode, cityName);
-
     if (realTimeWeather == null) {
-      throw new LocationNotFoundException("No Location found with given country code and city name");
+      throw new LocationNotFoundException(countryCode, cityName);
     }
     return realTimeWeather;
   }
 
-  public RealtimeWeather getByLocationCode(String code) throws LocationNotFoundException {
+  public RealtimeWeather getByLocationCode(String code) {
     RealtimeWeather realTimeWeather = repository.findByLocationCode(code);
 
     if (realTimeWeather == null) {
-      throw new LocationNotFoundException("No Location found with given country code");
+      throw new LocationNotFoundException(code);
     }
     return realTimeWeather;
   }
 
-  public RealtimeWeather update(String locationCode, RealtimeWeather realTimeWeather) throws LocationNotFoundException {
+  public RealtimeWeather update(String locationCode, RealtimeWeather realTimeWeather) {
     Location location = locationRepository.findByCode(locationCode);
-    if(location == null) {
-      throw new LocationNotFoundException("No Location found with given location code");
+    if (location == null) {
+      throw new LocationNotFoundException(locationCode);
     }
 
     realTimeWeather.setLocation(location);
     realTimeWeather.setLatUpdate(new Date());
 
-    if(location.getRealTimeWeather()==null) {
+    if (location.getRealTimeWeather() == null) {
       location.setRealTimeWeather(realTimeWeather);
       Location updatedLocation = locationRepository.save(location);
       return updatedLocation.getRealTimeWeather();
