@@ -90,7 +90,7 @@ public class LocationRepositoryTests {
     realTimeWeather.setPrecipitation(40);
     realTimeWeather.setStatus("Snowy");
     realTimeWeather.setWindSpeed(15);
-    realTimeWeather.setLatUpdate(new Date());
+    realTimeWeather.setLastUpdate(new Date());
     Location updatedLocation = locationRepository.save(location);
 
     assertThat(updatedLocation.getRealTimeWeather().getLocationCode()).isEqualTo(code);

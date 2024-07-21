@@ -23,22 +23,18 @@ public class RealtimeWeather {
   @Column(name = "location_code")
   @JsonIgnore
   private String locationCode;
-  @Range(min = -50, max = 50, message = "Temperature must be between -50 and 50")
   private int temperature;
-  @Range(min = 0, max = 100, message = "Humidity must be between 0 and 100")
   private int humidity;
-  @Range(min = 0, max = 100, message = "Precipitation must be between 0 and 100")
+
   private int precipitation;
-  @Range(min = 0, max = 100, message = "Wind speed must be between 0 and 100")
+
   @JsonProperty("wind_speed")
   private int windSpeed;
   @Column(length = 50)
-  @NotBlank(message = "Status can't be blank")
-  @Length(min = 3, max = 50, message = "Status must have 3-50 characters")
   private String status;
   @JsonProperty("last_update")
   @JsonIgnore
-  private Date latUpdate;
+  private Date lastUpdate;
   @OneToOne
   @JoinColumn(name = "location_code")
   @MapsId
@@ -93,12 +89,12 @@ public class RealtimeWeather {
     this.status = status;
   }
 
-  public Date getLatUpdate() {
-    return latUpdate;
+  public Date getLastUpdate() {
+    return lastUpdate;
   }
 
-  public void setLatUpdate(Date latUpdate) {
-    this.latUpdate = latUpdate;
+  public void setLastUpdate(Date lastUpdate) {
+    this.lastUpdate = lastUpdate;
   }
 
   public Location getLocation() {
