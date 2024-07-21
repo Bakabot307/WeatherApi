@@ -2,6 +2,7 @@ package com.skyapi.weatherforecast.location;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.skyapi.weatherforecast.common.DailyWeather;
 import com.skyapi.weatherforecast.common.HourlyWeather;
 import com.skyapi.weatherforecast.common.Location;
 import com.skyapi.weatherforecast.common.RealtimeWeather;
@@ -149,4 +150,37 @@ public class LocationRepositoryTests {
 
   }
 
+  @Test
+  public void testAddDailyWeatherData() {
+    Location location = locationRepository.findById("DELHI_IN").get();
+    List<DailyWeather> list = location.getListDailyWeather();
+
+    System.out.println(location);
+
+    DailyWeather dailyWeather = new DailyWeather()
+        .location(location)
+        .dayOfMonth(1)
+        .month(1)
+        .maxTemp(30)
+        .minTemp(20)
+        .precipitation(0)
+        .status("Rainy");
+
+    DailyWeather dailyWeather2 = new DailyWeather()
+        .location(location)
+        .dayOfMonth(2)
+        .month(1)
+        .maxTemp(40)
+        .minTemp(10)
+        .precipitation(10)
+        .status("Rainy");
+
+    list.add(dailyWeather);
+    list.add(dailyWeather2);
+
+
+    locationRepository.save(location);
+
+    assertThat(location.getListDailyWeather().size()).isEqualTo(2);
+  }
 }
