@@ -82,7 +82,12 @@ public class DailyWeather {
     setStatus(status);
     return this;
   }
-
+  public DailyWeather id(int dayOfMonth, int month, Location location) {
+    this.id.setLocation(location);
+    this.id.setDayOfMonth(dayOfMonth);
+    this.id.setMonth(month);
+    return this;
+  }
   public DailyWeather location(Location location) {
     this.id.setLocation(location);
     return this;

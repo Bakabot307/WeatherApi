@@ -2,7 +2,9 @@ package com.skyapi.weatherforecast;
 
 import com.skyapi.weatherforecast.common.DailyWeather;
 import com.skyapi.weatherforecast.common.HourlyWeather;
+import com.skyapi.weatherforecast.common.Location;
 import com.skyapi.weatherforecast.dailyweather.DailyWeatherDTO;
+import com.skyapi.weatherforecast.fullweather.FullWeatherDTO;
 import com.skyapi.weatherforecast.hourlyweather.HourlyWeatherDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -31,6 +33,9 @@ public class WeatherApiServiceApplication {
     var typeMap4 = modelMapper.typeMap(DailyWeatherDTO.class, DailyWeather.class);
     typeMap4.addMapping(DailyWeatherDTO::getDayOfMonth, (dest, value) -> dest.getId().setDayOfMonth(value != null ? (int) value : 0));
     typeMap4.addMapping(DailyWeatherDTO::getMonth, (dest, value) -> dest.getId().setMonth(value != null ? (int) value : 0));
+
+    var typeMap5 = modelMapper.typeMap(Location.class, FullWeatherDTO.class);
+    typeMap5.addMapping(Location::toString, FullWeatherDTO::setLocation);
 
     return modelMapper;
   }

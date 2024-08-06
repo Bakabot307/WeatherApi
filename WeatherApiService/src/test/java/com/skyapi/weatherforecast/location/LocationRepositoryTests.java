@@ -78,12 +78,12 @@ public class LocationRepositoryTests {
     String code = "NYC_USA";
     Location location = locationRepository.findByCode(code);
 
-    RealtimeWeather realTimeWeather = location.getRealTimeWeather();
+    RealtimeWeather realTimeWeather = location.getRealtimeWeather();
 
     if (realTimeWeather == null) {
       realTimeWeather = new RealtimeWeather();
       realTimeWeather.setLocation(location);
-      location.setRealTimeWeather(realTimeWeather);
+      location.setRealtimeWeather(realTimeWeather);
     }
     realTimeWeather.setTemperature(-1);
     realTimeWeather.setHumidity(30);
@@ -93,7 +93,7 @@ public class LocationRepositoryTests {
     realTimeWeather.setLastUpdate(new Date());
     Location updatedLocation = locationRepository.save(location);
 
-    assertThat(updatedLocation.getRealTimeWeather().getLocationCode()).isEqualTo(code);
+    assertThat(updatedLocation.getRealtimeWeather().getLocationCode()).isEqualTo(code);
   }
 
   @Test

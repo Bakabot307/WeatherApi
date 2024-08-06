@@ -82,7 +82,7 @@ public class RealtimeWeatherApiControllerTests {
     realtimeWeather.setWindSpeed(5);
 
     realtimeWeather.setLocation(location);
-    location.setRealTimeWeather(realtimeWeather);
+    location.setRealtimeWeather(realtimeWeather);
 
 
     Mockito.when(locationService.getLocation(Mockito.anyString())).thenReturn(location);
@@ -132,7 +132,7 @@ public class RealtimeWeatherApiControllerTests {
     realtimeWeather.setWindSpeed(5);
 
     realtimeWeather.setLocation(location);
-    location.setRealTimeWeather(realtimeWeather);
+    location.setRealtimeWeather(realtimeWeather);
 
 
     Mockito.when(realtimeWeatherService.getByLocationCode(locationCode)).thenReturn(realtimeWeather);
@@ -218,7 +218,7 @@ public class RealtimeWeatherApiControllerTests {
     location.setCountryCode("US");
 
     realtimeWeather.setLocation(location);
-    location.setRealTimeWeather(realtimeWeather);
+    location.setRealtimeWeather(realtimeWeather);
 
     Mockito.when(realtimeWeatherService.update(locationCode, realtimeWeather)).thenReturn(realtimeWeather);
 

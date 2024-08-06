@@ -1,7 +1,5 @@
 package com.skyapi.weatherforecast.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,11 +8,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Table(name = "locations")
@@ -41,12 +37,12 @@ public class Location {
   private boolean trashed;
   @OneToOne(mappedBy = "location", cascade = CascadeType.ALL)
   @PrimaryKeyJoinColumn
-  private RealtimeWeather realTimeWeather;
+  private RealtimeWeather realtimeWeather;
 
-  @OneToMany(mappedBy = "id.location", cascade = CascadeType.ALL,orphanRemoval = true)
+  @OneToMany(mappedBy = "id.location", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<HourlyWeather> listHourlyWeather = new ArrayList<>();
 
-  @OneToMany(mappedBy = "id.location", cascade = CascadeType.ALL,orphanRemoval = true)
+  @OneToMany(mappedBy = "id.location", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<DailyWeather> listDailyWeather = new ArrayList<>();
 
   public Location() {
@@ -138,12 +134,12 @@ public class Location {
     return cityName + (regionName != null ? ", " + regionName : "") + ", " + countryName;
   }
 
-  public RealtimeWeather getRealTimeWeather() {
-    return realTimeWeather;
+  public RealtimeWeather getRealtimeWeather() {
+    return realtimeWeather;
   }
 
-  public void setRealTimeWeather(RealtimeWeather realTimeWeather) {
-    this.realTimeWeather = realTimeWeather;
+  public void setRealtimeWeather(RealtimeWeather realtimeWeather) {
+    this.realtimeWeather = realtimeWeather;
   }
 
   public List<HourlyWeather> getListHourlyWeather() {
