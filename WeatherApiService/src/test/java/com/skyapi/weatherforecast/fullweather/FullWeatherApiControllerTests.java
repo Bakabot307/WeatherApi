@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.skyapi.weatherforecast.GeoLocationException;
 import com.skyapi.weatherforecast.GeoLocationService;
 import com.skyapi.weatherforecast.common.DailyWeather;
-import com.skyapi.weatherforecast.common.DailyWeatherId;
 import com.skyapi.weatherforecast.common.HourlyWeather;
 import com.skyapi.weatherforecast.common.Location;
 import com.skyapi.weatherforecast.common.RealtimeWeather;
@@ -26,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(FullWeatherController.class)
 public class FullWeatherApiControllerTests {
+
   private static final String END_POINT_PATH = "/v1/full";
   @Autowired
   private MockMvc mockMvc;
@@ -50,6 +50,7 @@ public class FullWeatherApiControllerTests {
     mockMvc.perform(get(END_POINT_PATH)).andExpect(status().isNotFound());
   }
 
+
   @Test
   public void testListFullWeatherByIPAddressReturn200Ok() throws Exception {
     Location location = new Location().code("DELHI_IN");
@@ -68,25 +69,12 @@ public class FullWeatherApiControllerTests {
     realtimeWeather.setStatus("Sunny");
 
     List<DailyWeather> dailyWeathersList = new ArrayList<>();
-    DailyWeather dailyWeather = new DailyWeather()
-        .id(1,1,location)
-        .minTemp(20)
-        .maxTemp(30)
-        .precipitation(0)
-        .status("Sunny")  ;
+    DailyWeather dailyWeather = new DailyWeather().id(1, 1, location).minTemp(20).maxTemp(30).precipitation(0).status("Sunny");
     dailyWeathersList.add(dailyWeather);
 
     List<HourlyWeather> hourlyWeatherList = new ArrayList<>();
-    HourlyWeather hourlyWeather = new HourlyWeather()
-        .id(location,1)
-        .precipitation(0)
-        .temperature(30)
-        .status("Sunny");
+    HourlyWeather hourlyWeather = new HourlyWeather().id(location, 1).precipitation(0).temperature(30).status("Sunny");
     hourlyWeatherList.add(hourlyWeather);
-
-
-
-
 
     location.setRealtimeWeather(realtimeWeather);
     location.setListHourlyWeather(hourlyWeatherList);
@@ -96,5 +84,47 @@ public class FullWeatherApiControllerTests {
     when(fullWeatherService.getLocation(location)).thenReturn(location);
 
     mockMvc.perform(get(END_POINT_PATH)).andExpect(status().isOk()).andDo(print());
+  }
+
+
+  @Test
+  public void testListFullWeatherByCode404Notfound() throws Exception {
+    String locationCode = "DELHI_IN";
+    String pathRequest = END_POINT_PATH + "/" + locationCode;
+    LocationNotFoundException exception = new LocationNotFoundException(locationCode);
+    when(fullWeatherService.getLocation(locationCode)).thenThrow(exception);
+    mockMvc.perform(get(pathRequest)).andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void testListFullWeatherByCode200Ok() throws Exception {
+    Location location = new Location().code("DELHI_IN");
+    location.setCountryCode("IN");
+    location.setCityName("DELHI");
+    location.setRegionName("DELHI");
+    location.setCountryName("INDIA");
+    location.setEnabled(true);
+
+    RealtimeWeather realtimeWeather = new RealtimeWeather();
+    realtimeWeather.setLocation(location);
+    realtimeWeather.setTemperature(30);
+    realtimeWeather.setHumidity(50);
+    realtimeWeather.setWindSpeed(10);
+    realtimeWeather.setLastUpdate(new Date());
+    realtimeWeather.setStatus("Sunny");
+
+    List<DailyWeather> dailyWeathersList = new ArrayList<>();
+    DailyWeather dailyWeather = new DailyWeather().id(1, 1, location).minTemp(20).maxTemp(30).precipitation(0).status("Sunny");
+    dailyWeathersList.add(dailyWeather);
+
+    List<HourlyWeather> hourlyWeatherList = new ArrayList<>();
+    HourlyWeather hourlyWeather = new HourlyWeather().id(location, 1).precipitation(0).temperature(30).status("Sunny");
+    hourlyWeatherList.add(hourlyWeather);
+
+    location.setRealtimeWeather(realtimeWeather);
+    location.setListHourlyWeather(hourlyWeatherList);
+    location.setListDailyWeather(dailyWeathersList);
+    when(fullWeatherService.getLocation(location.getCode())).thenReturn(location);
+    mockMvc.perform(get(END_POINT_PATH + "/DELHI_IN")).andExpect(status().isOk()).andDo(print());
   }
 }
